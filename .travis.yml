@@ -24,7 +24,7 @@ matrix:
 
 before_script:
   - composer install --prefer-dist --no-interaction
-
+  - bin/cake plugin load -b VarnishBakery
   - if [[ $PHPCS = 1 ]]; then composer require cakephp/cakephp-codesniffer; fi
 
 script:
