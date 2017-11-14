@@ -1,4 +1,5 @@
 <?php
+use Cake\Core\Plugin;
 /**
  * Test suite bootstrap for VarnishBakery.
  *
@@ -23,6 +24,7 @@ unset($findRoot);
 chdir($root);
 
 if (file_exists($root . '/config/bootstrap.php')) {
+    Plugin::load('VarnishBakery', ['bootstrap' => true, 'routes' => true]);
     require $root . '/config/bootstrap.php';
 
     return;
