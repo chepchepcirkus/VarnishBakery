@@ -45,7 +45,7 @@ class Socket
     }
 
     /**
-     * @param $data data
+     * @param string $data data
      * @return array|bool|string
      */
     public function execute($data)
@@ -58,7 +58,7 @@ class Socket
     }
 
     /**
-     * @param $data data
+     * @param string $data data
      * @return $this
      */
     protected function _writeSocket($data)
@@ -76,7 +76,8 @@ class Socket
     /**
      * @return array|bool|string
      */
-    public function readSocket() {
+    public function readSocket()
+    {
         $code = null;
         $len = -1;
         while (!feof($this->_socket)) {

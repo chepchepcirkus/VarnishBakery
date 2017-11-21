@@ -14,8 +14,8 @@
  */
 namespace Varnishbakery\Shell;
 
-use Cake\Core\Exception\Exception;
 use Cake\Console\Shell;
+use Cake\Core\Exception\Exception;
 use VarnishBakery\Model\Socket as Socket;
 use VarnishBakery\Model\Config;
 
@@ -27,7 +27,7 @@ class VclCookShell extends Shell
 
     /**
      * Start the shell and interactive console.
-     * @param $args args
+     * @param array $args args
      * @return bool
      */
     public function main(...$args)
@@ -58,12 +58,14 @@ class VclCookShell extends Shell
             // Retrieve configuration for vcl template
             if (!isset($vclConfig['vcl_template'])) {
                 $this->err('"vcl_template" configuration doesn\'t exist.');
+
                 return false;
             }
 
             // Check if vcl template exists
             if (!is_file($vclConfig['vcl_template'])) {
                 $this->err('"vcl_template" configuration is not a regular file path');
+
                 return false;
             }
 
@@ -155,6 +157,7 @@ class VclCookShell extends Shell
 
     /**
      *
+     * @return null
      */
     public function help()
     {
@@ -173,7 +176,7 @@ class VclCookShell extends Shell
     }
 
     /**
-     * @param $code code
+     * @param string $code code
      * @return string
      */
     protected function _cleanAsCStyle($code)
@@ -183,11 +186,13 @@ class VclCookShell extends Shell
         // Replace carriage return by corresponding caracter in C
         $cp = str_replace(PHP_EOL, '\n', $cp);
         // Wrap string with double quote
-        return sprintf('"%s"', $cp);
+        $r = sprintf('"%s"', $cp);
+
+        return $r;
     }
 
     /**
-     * @param $command command
+     * @param string $command command
      * @param array $options options
      * @return string
      */
@@ -225,8 +230,8 @@ class VclCookShell extends Shell
     }
 
     /**
-     * @param $data string to clean
-     * @return array|string
+     * @param string $data string to clean
+     * @return string
      */
     protected function _cleanVclStr($data)
     {
@@ -236,16 +241,14 @@ class VclCookShell extends Shell
     }
 
     /**
-     * @param $line line
+     * @param string $line line
      * @return bool
      */
     protected function _vclCommentCleaner($line)
     {
 
-        return (
-            substr($line, 0, 1) != '#'
+        return (substr($line, 0, 1) != '#'
             && substr($line, 0, 2) != '//'
-            && substr($line, 0, 2) != '/*'
-        );
+            && substr($line, 0, 2) != '/*');
     }
 }

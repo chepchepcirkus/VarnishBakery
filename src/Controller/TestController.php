@@ -8,6 +8,7 @@ class TestController extends BaseController
 {
     /**
      * index function
+     * @return null
      */
     public function index()
     {

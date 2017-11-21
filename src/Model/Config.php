@@ -32,7 +32,7 @@ class Config
     }
 
     /**
-     * @param bool $name
+     * @param bool $name config name
      * @return mixed|null
      */
     public function getConfig($name = false)

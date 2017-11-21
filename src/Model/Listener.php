@@ -44,10 +44,10 @@ class Listener implements EventListenerInterface
                         break;
                     }
                     $customPath = '';
-                    if ($i === 0 ) {
+                    if ($i === 0) {
                         $customPath = $path[0];
                     } else {
-                        for ($j=0; $j < $i; $j++) {
+                        for ($j = 0; $j < $i; $j++) {
                             if (strlen($customPath) > 0) {
                                 $customPath .= '/';
                             }
@@ -73,8 +73,8 @@ class Listener implements EventListenerInterface
     }
 
     /**
-     * @param $request request
-     * @param $index index
+     * @param string $request request
+     * @param string $index index
      * @return string
      */
     public function buildRoute($request, $index)
