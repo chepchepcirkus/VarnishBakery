@@ -11,6 +11,10 @@ class Socket
     protected $_port = '6082';
     protected $_timeout = 10;
 
+    /**
+     * Socket constructor.
+     * @param array $options
+     */
     public function __construct(array $options = array())
     {
         foreach ($options as $key => $value) {
@@ -31,7 +35,7 @@ class Socket
 
         if (is_null($this->_socket)) {
             $this->_socket = fsockopen($this->_host, $this->_port, $errorCode, $errorDesc, $this->_timeout);
-            if(!is_resource($this->_socket)) {
+            if (!is_resource($this->_socket)) {
                 throw new Exception(sprintf($this->_host, $this->_port, $errorCode, $errorDesc));
             }
 
@@ -40,6 +44,10 @@ class Socket
         }
     }
 
+    /**
+     * @param $data
+     * @return array|bool|string
+     */
     public function execute($data)
     {
         try {
@@ -49,29 +57,36 @@ class Socket
         }
     }
 
+    /**
+     * @param $data
+     * @return $this
+     */
     protected function _writeSocket($data) {
 
         $data = rtrim($data) . PHP_EOL;
         $res = fwrite($this->_socket, $data);
 
-        if($res != strlen($data)) {
+        if ($res != strlen($data)) {
             throw new Exception('Socket write error');
         }
         return $this;
     }
 
+    /**
+     * @return array|bool|string
+     */
     public function readSocket() {
         $code = null;
         $len = -1;
         while(!feof($this->_socket)) {
             $res = fgets($this->_socket, 1024);
-            if(empty($res)) {
+            if (empty($res)) {
                 $streamMeta = stream_get_meta_data($this->_socket);
                 if (isset($streamMeta['timed_out']) && $streamMeta['timed_out']) {
                     throw new Exception('Socket timeout');
                 }
             }
-            if(preg_match('/(\d{3}) (\d+)/', $res, $match)) {
+            if (preg_match('/(\d{3}) (\d+)/', $res, $match)) {
                 $code = (int)$match[1];
                 $len = (int)$match[2];
                 break;

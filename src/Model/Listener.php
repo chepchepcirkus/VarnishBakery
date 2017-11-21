@@ -9,6 +9,9 @@ use Cake\Core\Plugin;
 
 class Listener implements EventListenerInterface
 {
+    /**
+     * @return array
+     */
     public function implementedEvents()
     {
         return [
@@ -16,6 +19,9 @@ class Listener implements EventListenerInterface
         ];
     }
 
+    /**
+     * @param Event $event
+     */
     public function setHeaderCacheFlag(Event $event)
     {
         $config = new Config();
@@ -28,48 +34,53 @@ class Listener implements EventListenerInterface
         $grep = preg_grep($pattern, $noCacheRoutes);
 
         // Check if url match against restriction url from configuration
-        if(count($grep) > 0) {
+        if (count($grep) > 0) {
             for($i = 1;$i <= count($path);$i++) {
-                foreach($grep as $data) {
-                    if($data === $controller->request->url) {
+                foreach ($grep as $data) {
+                    if ($data === $controller->request->url) {
                         $found = true;
                         break;
                     }
                     $customPath = '';
-                    if($i === 0 ) {
+                    if ($i === 0 ) {
                         $customPath = $path[0];
                     } else {
                         for($j=0;$j<$i;$j++) {
-                            if(strlen($customPath) > 0) {
+                            if (strlen($customPath) > 0) {
                                 $customPath .= '/';
                             }
                             $customPath .= $path[$j];
                         }
                     }
 
-                    if($customPath . '/*' === $data) {
+                    if ($customPath . '/*' === $data) {
                         $found = true;
                         break;
                     }
                 }
-                if($found) {
+                if ($found) {
                     break;
                 }
             }
         }
 
-        if($found) {
+        if ($found) {
             $controller->response = $controller->response->withHeader('X-VarnishBakery-Cache', "0");
             $event->setResult($controller);
         }
     }
 
+    /**
+     * @param $request
+     * @param $index
+     * @return string
+     */
     public function buildRoute($request, $index) {
         $route = '';
-        foreach($index as $id) {
+        foreach ($index as $id) {
             $param = $request->getParam($id);
-            if(!is_null($param) || !$param) {
-                if(strlen($route) > 0) {
+            if (!is_null($param) || !$param) {
+                if (strlen($route) > 0) {
                     $route .= '/';
                 }
                 $route .= strtolower($param);

@@ -35,7 +35,7 @@ class VclCookShell extends Shell
         $this->out();
         $this->info('Welcome to varnish bakery cooking Shell');
         $this->out();
-        if(count($args) > 0) {
+        if (count($args) > 0) {
             $command = $args[0];
             array_shift($args);
             $this->varnishCommand($command, $args);
@@ -44,6 +44,9 @@ class VclCookShell extends Shell
         }
     }
 
+    /**
+     * @return bool
+     */
     public function applyVcl()
     {
         try{
@@ -51,13 +54,13 @@ class VclCookShell extends Shell
             $vclConfig = $this->_getConfig()->getVclConfig();
 
             // Retrieve configuration for vcl template
-            if(!isset($vclConfig['vcl_template'])) {
+            if (!isset($vclConfig['vcl_template'])) {
                 $this->err('"vcl_template" configuration doesn\'t exist.');
                 return false;
             }
 
             // Check if vcl template exists
-            if(!is_file($vclConfig['vcl_template'])) {
+            if (!is_file($vclConfig['vcl_template'])) {
                 $this->err('"vcl_template" configuration is not a regular file path');
                 return false;
             }
@@ -67,7 +70,7 @@ class VclCookShell extends Shell
             // Match and replace all variables in template by values from configuration
             if (preg_match_all("/{{(.*?)}}/", $content, $dynamicVars)) {
                 foreach ($dynamicVars[1] as $i => $varname) {
-                    if(isset($vclConfig[$varname])) {
+                    if (isset($vclConfig[$varname])) {
                         $content = str_replace($dynamicVars[0][$i], sprintf('%s', $vclConfig[$varname]), $content);
                     } else {
                         throw new Exception("$varname is not present in the configuration");
@@ -91,13 +94,18 @@ class VclCookShell extends Shell
         return true;
     }
 
+    /**
+     * @param string $command
+     * @param array $options
+     * @return bool
+     */
     public function varnishCommand($command = 'help', $options = array())
     {
         try {
 
-            if(is_null($this->_secret)) {
+            if (is_null($this->_secret)) {
                 $config = $this->_getConfig()->getVarnishConfig();
-                if(!isset($config['secret'])) {
+                if (!isset($config['secret'])) {
                     throw new Exception('Varnish secret not found in configuration');
                 } else {
                     $this->_secret = $config['secret'];
@@ -108,7 +116,7 @@ class VclCookShell extends Shell
             $data = $this->_prepareCommand($command, $options);
 
             // Create the socket
-            if(is_null($this->_socket)) {
+            if (is_null($this->_socket)) {
 
                 $this->_socket = new Socket($this->_getConfig()->getVarnishConfig());
                 $res = $this->_socket->readSocket();
@@ -128,7 +136,7 @@ class VclCookShell extends Shell
             //Execute command throughout the socket
             $res = $this->_socket->execute($data);
 
-            if($res['code'] !== 200) {
+            if ($res['code'] !== 200) {
                 throw new Exception(
                     sprintf("Varnish error code : %d\r\n%s", $res['code'], $res['text'])
                 );
@@ -142,19 +150,29 @@ class VclCookShell extends Shell
         }
     }
 
+    /**
+     *
+     */
     public function help()
     {
         $this->varnishCommand();
         $this->_displayHelp('help');
     }
 
+    /**
+     * @return null|Config
+     */
     protected function _getConfig() {
-        if(is_null($this->_config)) {
+        if (is_null($this->_config)) {
             $this->_config = new Config();
         }
         return $this->_config;
     }
 
+    /**
+     * @param $code
+     * @return string
+     */
     protected function _cleanAsCStyle($code)
     {
         // Escape quote as C style
@@ -165,10 +183,15 @@ class VclCookShell extends Shell
         return sprintf('"%s"', $cp);
     }
 
+    /**
+     * @param $command
+     * @param array $options
+     * @return string
+     */
     protected function _prepareCommand($command, $options = array())
     {
         $cleanedParams = array();
-        foreach($options as $opt) {
+        foreach ($options as $opt) {
             $cleanedParams[] = $this->_cleanAsCStyle($opt);
         }
 
@@ -198,6 +221,10 @@ class VclCookShell extends Shell
         return $parser;
     }
 
+    /**
+     * @param $data
+     * @return array|string
+     */
     protected function _cleanVclStr($data)
     {
         $data = array_filter(array_map('trim', explode(PHP_EOL, trim($data))));
@@ -205,6 +232,10 @@ class VclCookShell extends Shell
         return $data;
     }
 
+    /**
+     * @param $line
+     * @return bool
+     */
     protected function _vclCommentCleaner($line) {
         return (
             substr($line, 0, 1) != '#'

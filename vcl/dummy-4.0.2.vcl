@@ -50,7 +50,7 @@ sub vcl_deliver {
         set resp.http.X-Cache = "MISS";
     }
 
-    if(!{{debug_mode}}) {
+    if (!{{debug_mode}}) {
         unset resp.http.x-url;
         unset resp.http.x-host;
         unset resp.http.X-Powered-By;

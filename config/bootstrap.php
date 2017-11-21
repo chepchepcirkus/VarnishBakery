@@ -9,7 +9,7 @@ $listener = new Listener();
 EventManager::instance()->on($listener);
 
 // Set Configuration
-$pluginRootPath = __File__ ; DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+$pluginRootPath = str_replace('config', '', __DIR__);
 Configure::write('varnish_bakery', [
         'vcl' => [
             'backend_host' => '127.0.0.1',
@@ -20,7 +20,7 @@ Configure::write('varnish_bakery', [
         'varnish' => [
             'host' => '127.0.0.1',
             'port' => '6082',
-            'secret' => "YOUR_SECRET"
+            'secret' => "YOUR_SECRET\n"
         ],
         'no_cache_routes' => [
             'varnish-bakery/*'

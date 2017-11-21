@@ -8,15 +8,21 @@ class Config
 {
     protected $_config = null;
 
+    /**
+     * @return mixed
+     */
     public function getVclConfig()
     {
         $data = $this->getConfig();
-        if(!isset($data['vcl'])) {
+        if (!isset($data['vcl'])) {
             throw new Exception('Vcl configuration data are missing');
         }
         return $data['vcl'];
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getVarnishConfig()
     {
         $data = $this->getConfig('varnish');
@@ -24,17 +30,21 @@ class Config
         return $data;
     }
 
+    /**
+     * @param bool $name
+     * @return mixed|null
+     */
     public function getConfig($name = false)
     {
-        if(is_null($this->_config)) {
-            if(!Configure::check('varnish_bakery')) {
+        if (is_null($this->_config)) {
+            if (!Configure::check('varnish_bakery')) {
                 throw new Exception('Configuration is missing');
             }
             $this->_config = Configure::read('varnish_bakery');
         }
 
-        if($name) {
-            if(!isset($this->_config[$name])) {
+        if ($name) {
+            if (!isset($this->_config[$name])) {
                 throw new Exception("Varnish $name configuration is missing");
             }
             return $this->_config[$name];
