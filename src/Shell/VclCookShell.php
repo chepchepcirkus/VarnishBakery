@@ -128,7 +128,7 @@ class VclCookShell extends Shell
                 if ($res['code'] === 107) {
                     $varnishToken = substr($res['text'], 0, 32);
                     $authArgHash = hash('sha256', sprintf("%s\n%s%s\n", $varnishToken, $this->_secret, $varnishToken));
-                    $authData = $this->_prepareCommand('auth', array($authArgHash));
+                    $authData = $this->_prepareCommand('auth', [$authArgHash]);
                     $authRes = $this->_socket->execute($authData);
                     if ($authRes['code'] !== 200) {
                         throw new Exception('Authentication failed : ' . $authRes['text']);
