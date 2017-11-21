@@ -1,5 +1,8 @@
 # VarnishBakery plugin for CakePHP
 
+[![Build Status](https://travis-ci.org/chepchepcirkus/VarnishBakery.svg?branch=master)](https://travis-ci.org/chepchepcirkus/VarnishBakery)
+[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg)](https://php.net/)
+
 This plugin allow you to manage varnish tasks from cake shell.
 
 ## Features
