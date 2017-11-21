@@ -17,6 +17,7 @@ class Config
         if (!isset($data['vcl'])) {
             throw new Exception('Vcl configuration data are missing');
         }
+
         return $data['vcl'];
     }
 
@@ -47,6 +48,7 @@ class Config
             if (!isset($this->_config[$name])) {
                 throw new Exception("Varnish $name configuration is missing");
             }
+
             return $this->_config[$name];
         }
 

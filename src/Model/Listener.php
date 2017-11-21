@@ -2,10 +2,10 @@
 
 namespace VarnishBakery\Model;
 
+use Cake\Core\Plugin;
 use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
 use VarnishBakery\Model\Config as Config;
-use Cake\Core\Plugin;
 
 class Listener implements EventListenerInterface
 {
@@ -20,7 +20,8 @@ class Listener implements EventListenerInterface
     }
 
     /**
-     * @param Event $event
+     * @param Event $event cakephp event
+     * @return null
      */
     public function setHeaderCacheFlag(Event $event)
     {
@@ -35,7 +36,8 @@ class Listener implements EventListenerInterface
 
         // Check if url match against restriction url from configuration
         if (count($grep) > 0) {
-            for($i = 1;$i <= count($path);$i++) {
+            $c = count($path);
+            for ($i = 1; $i <= $c; $i++) {
                 foreach ($grep as $data) {
                     if ($data === $controller->request->url) {
                         $found = true;
@@ -45,7 +47,7 @@ class Listener implements EventListenerInterface
                     if ($i === 0 ) {
                         $customPath = $path[0];
                     } else {
-                        for($j=0;$j<$i;$j++) {
+                        for ($j=0; $j < $i; $j++) {
                             if (strlen($customPath) > 0) {
                                 $customPath .= '/';
                             }
@@ -71,11 +73,12 @@ class Listener implements EventListenerInterface
     }
 
     /**
-     * @param $request
-     * @param $index
+     * @param $request request
+     * @param $index index
      * @return string
      */
-    public function buildRoute($request, $index) {
+    public function buildRoute($request, $index)
+    {
         $route = '';
         foreach ($index as $id) {
             $param = $request->getParam($id);
@@ -86,6 +89,7 @@ class Listener implements EventListenerInterface
                 $route .= strtolower($param);
             }
         }
+
         return $route;
     }
 }

@@ -13,9 +13,9 @@ class Socket
 
     /**
      * Socket constructor.
-     * @param array $options
+     * @param array $options config
      */
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         foreach ($options as $key => $value) {
             switch ($key) {
@@ -45,30 +45,31 @@ class Socket
     }
 
     /**
-     * @param $data
+     * @param $data data
      * @return array|bool|string
      */
     public function execute($data)
     {
         try {
             return $this->_writeSocket($data)->readSocket();
-        } catch(Exception $e) {
-            return array('code' => $e->getCode(), 'text' => $e->getMessage());
+        } catch (Exception $e) {
+            return ['code' => $e->getCode(), 'text' => $e->getMessage()];
         }
     }
 
     /**
-     * @param $data
+     * @param $data data
      * @return $this
      */
-    protected function _writeSocket($data) {
-
+    protected function _writeSocket($data)
+    {
         $data = rtrim($data) . PHP_EOL;
         $res = fwrite($this->_socket, $data);
 
         if ($res != strlen($data)) {
             throw new Exception('Socket write error');
         }
+
         return $this;
     }
 
@@ -78,7 +79,7 @@ class Socket
     public function readSocket() {
         $code = null;
         $len = -1;
-        while(!feof($this->_socket)) {
+        while (!feof($this->_socket)) {
             $res = fgets($this->_socket, 1024);
             if (empty($res)) {
                 $streamMeta = stream_get_meta_data($this->_socket);
@@ -96,11 +97,12 @@ class Socket
         if (is_null($code)) {
             throw new Exception('Failed to read response code from Varnish');
         } else {
-            $res = array('code' => $code, 'text' => '');
-            while (!feof($this->_socket) &&
-                strlen($res['text']) < $len) {
+            $res = ['code' => $code, 'text' => ''];
+            $totalLength = strlen($res['text']);
+            while (!feof($this->_socket) && $totalLength < $len) {
                 $res['text'] .= fgets($this->_socket, 1024);
             }
+
             return $res;
         }
     }

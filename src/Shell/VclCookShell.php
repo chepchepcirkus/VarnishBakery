@@ -14,8 +14,8 @@
  */
 namespace Varnishbakery\Shell;
 
-use Cake\Console\Shell;
 use Cake\Core\Exception\Exception;
+use Cake\Console\Shell;
 use VarnishBakery\Model\Socket as Socket;
 use VarnishBakery\Model\Config;
 
@@ -27,8 +27,8 @@ class VclCookShell extends Shell
 
     /**
      * Start the shell and interactive console.
-     *
-     * @return int|null
+     * @param $args args
+     * @return bool
      */
     public function main(...$args)
     {
@@ -42,6 +42,8 @@ class VclCookShell extends Shell
         } else {
             $this->varnishCommand();
         }
+
+        return true;
     }
 
     /**
@@ -49,7 +51,7 @@ class VclCookShell extends Shell
      */
     public function applyVcl()
     {
-        try{
+        try {
             // Retrieve configuration data
             $vclConfig = $this->_getConfig()->getVclConfig();
 
@@ -79,30 +81,32 @@ class VclCookShell extends Shell
             }
 
             // Create unique name for this vcl
-            $vclId = hash('sha256', sprintf('%s%s', time() , $this->_secret));
+            $vclId = hash('sha256', sprintf('%s%s', time(), $this->_secret));
             // Clean comment from vcl
             $content = $this->_cleanVclStr($content);
             // Load the inline vcl
-            $this->varnishCommand('vcl.inline', array($vclId, $content));
+            $this->varnishCommand('vcl.inline', [$vclId, $content]);
             // Apply the new vcl
-            $this->varnishCommand('vcl.use', array($vclId));
+            $this->varnishCommand('vcl.use', [$vclId]);
+
             return true;
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->err($e->getMessage());
+
             return false;
         }
+
         return true;
     }
 
     /**
-     * @param string $command
-     * @param array $options
+     * @param string $command command
+     * @param array $options options
      * @return bool
      */
-    public function varnishCommand($command = 'help', $options = array())
+    public function varnishCommand($command = 'help', $options = [])
     {
         try {
-
             if (is_null($this->_secret)) {
                 $config = $this->_getConfig()->getVarnishConfig();
                 if (!isset($config['secret'])) {
@@ -117,7 +121,6 @@ class VclCookShell extends Shell
 
             // Create the socket
             if (is_null($this->_socket)) {
-
                 $this->_socket = new Socket($this->_getConfig()->getVarnishConfig());
                 $res = $this->_socket->readSocket();
 
@@ -142,10 +145,10 @@ class VclCookShell extends Shell
                 );
             } else {
                 $this->info($res['text']);
-
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->err($e->getMessage());
+
             return false;
         }
     }
@@ -170,7 +173,7 @@ class VclCookShell extends Shell
     }
 
     /**
-     * @param $code
+     * @param $code code
      * @return string
      */
     protected function _cleanAsCStyle($code)
@@ -184,18 +187,18 @@ class VclCookShell extends Shell
     }
 
     /**
-     * @param $command
-     * @param array $options
+     * @param $command command
+     * @param array $options options
      * @return string
      */
-    protected function _prepareCommand($command, $options = array())
+    protected function _prepareCommand($command, $options = [])
     {
-        $cleanedParams = array();
+        $cleanedParams = [];
         foreach ($options as $opt) {
             $cleanedParams[] = $this->_cleanAsCStyle($opt);
         }
 
-        return implode(' ', array_merge(array(sprintf('"%s"', $command)), $cleanedParams));
+        return implode(' ', array_merge([sprintf('"%s"', $command)], $cleanedParams));
     }
 
     /**
@@ -222,21 +225,23 @@ class VclCookShell extends Shell
     }
 
     /**
-     * @param $data
+     * @param $data string to clean
      * @return array|string
      */
     protected function _cleanVclStr($data)
     {
         $data = array_filter(array_map('trim', explode(PHP_EOL, trim($data))));
-        $data = implode(PHP_EOL, array_filter($data, array($this, '_vclCommentCleaner')));
+        $data = implode(PHP_EOL, array_filter($data, [$this, '_vclCommentCleaner']));
         return $data;
     }
 
     /**
-     * @param $line
+     * @param $line line
      * @return bool
      */
-    protected function _vclCommentCleaner($line) {
+    protected function _vclCommentCleaner($line)
+    {
+
         return (
             substr($line, 0, 1) != '#'
             && substr($line, 0, 2) != '//'

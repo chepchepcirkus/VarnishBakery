@@ -26,4 +26,3 @@ Configure::write('varnish_bakery', [
             'varnish-bakery/*'
         ]
 ]);
-
